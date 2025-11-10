@@ -618,16 +618,32 @@
 
             showLoading();
 
+            // Collect patient data for dynamic recommendations
+            const patientData = {};
+            formConfigs[currentModel].forEach(field => {
+                const value = formData.get(field.name);
+                if (field.name === 'age' || field.name === 'glucose' || field.name === 'bloodPressure' || field.name === 'cholesterol') {
+                    patientData[field.name] = parseFloat(value);
+                }
+            });
+
             try {
+                const requestData = {
+                    model_type: currentModel,
+                    features: features
+                };
+
+                // Add patient data if available
+                if (Object.keys(patientData).length > 0) {
+                    requestData.patient_data = patientData;
+                }
+
                 const response = await fetch(`${API_BASE_URL}/api/predict`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        model_type: currentModel,
-                        features: features
-                    })
+                    body: JSON.stringify(requestData)
                 });
 
                 if (!response.ok) {
@@ -826,7 +842,7 @@
                 recommendationCard.className = 'result-card';
                 recommendationCard.style.background = '#f7fafc';
                 recommendationCard.innerHTML = `
-                    <h3>📋 Recommendations</h3>
+                    <h3>📋 Standard Recommendations</h3>
                     ${typeof data.recommendation === 'string' ? `<p>${data.recommendation}</p>` : `
                         ${data.recommendation.health_condition ? `<p><strong>Health Condition:</strong> ${data.recommendation.health_condition}</p>` : ''}
                         ${data.recommendation.healthcare_tips ? `<p><strong>Healthcare Tips:</strong> ${data.recommendation.healthcare_tips.join(', ')}</p>` : ''}
@@ -835,6 +851,18 @@
                     `}
                 `;
                 resultCards.appendChild(recommendationCard);
+            }
+
+            // Dynamic AI recommendation card
+            if (data.dynamic_recommendation) {
+                const dynamicCard = document.createElement('div');
+                dynamicCard.className = 'result-card';
+                dynamicCard.style.background = '#f0f9ff';
+                dynamicCard.innerHTML = `
+                    <h3>🤖 AI-Personalized Recommendations</h3>
+                    <div style="white-space: pre-line; line-height: 1.6;">${data.dynamic_recommendation}</div>
+                `;
+                resultCards.appendChild(dynamicCard);
             }
 
             // Additional tips
