@@ -10,3 +10,6 @@ pytesseract==0.3.10
 spacy==3.7.2
 pillow==10.0.1
 pandas==1.5.3
+transformers==4.21.0
+torch==1.12.1
+accelerate==0.20.3
