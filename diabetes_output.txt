@@ -1,0 +1,6 @@
+Positive sample features: [  6.    148.     72.     35.      0.     33.6     0.627  50.   ]
+Expected outcome: 1
+Model prediction: 0
+Negative sample features: [ 1.    85.    66.    29.     0.    26.6    0.351 31.   ]
+Expected outcome: 0
+Model prediction for negative: 0

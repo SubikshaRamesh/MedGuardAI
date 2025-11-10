@@ -1,0 +1,17 @@
+Medical Report
+
+Patient Name: John Doe
+Age: 45
+Gender: Male
+
+Vital Signs:
+- Blood Pressure: 140/90 mmHg
+- Glucose: 150 mg/dL
+- BMI: 28.5
+- Cholesterol: 220 mg/dL
+- HDL: 40 mg/dL
+- LDL: 140 mg/dL
+- Triglycerides: 180 mg/dL
+
+Assessment:
+Patient shows elevated glucose levels and high cholesterol. Risk factors for diabetes and heart disease present.

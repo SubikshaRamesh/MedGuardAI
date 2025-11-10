@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedGuardAI - AI-Powered Health Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page Styles */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Predict Page Styles */
+        .predict-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .model-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .model-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .model-btn:hover {
+            border-color: #667eea;
+        }
+
+        .model-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .form-section {
+            margin-top: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .upload-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .upload-label:hover {
+            background: #5568d3;
+        }
+
+        .submit-btn {
+            margin-top: 2rem;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Results Styles */
+        .results-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-card.high-risk {
+            background: #fee;
+            border-left: 5px solid #e53e3e;
+        }
+
+        .result-card.low-risk {
+            background: #efe;
+            border-left: 5px solid #38a169;
+        }
+
+        .result-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .result-card p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* About Page */
+        .about-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            line-height: 1.8;
+        }
+
+        .about-content h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .about-content p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">🏥 MedGuardAI</div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showPage('home')">Home</a></li>
+                <li><a href="#" onclick="showPage('predict')">Predict</a></li>
+                <li><a href="#" onclick="showPage('upload')">Upload</a></li>
+                <li><a href="#" onclick="showPage('about')">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>Welcome to MedGuardAI</h1>
+                <p>AI-Powered Health Prediction and Recommendation System</p>
+                <p>Get personalized health insights and recommendations using advanced machine learning</p>
+                <button class="btn-primary" onclick="showPage('predict')">Get Started →</button>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <h3>Diabetes Prediction</h3>
+                    <p>Analyze your health metrics to assess diabetes risk</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">❤️</div>
+                    <h3>Heart Disease Detection</h3>
+                    <p>Evaluate cardiovascular health indicators</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Stroke Risk Assessment</h3>
+                    <p>Identify potential stroke risk factors</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predict Page -->
+        <div id="predict" class="page">
+            <div class="predict-container">
+                <h2>Health Prediction</h2>
+                <p>Select a disease type and enter your health parameters</p>
+
+                <div class="model-selector">
+                    <button class="model-btn active" onclick="selectModel('diabetes')">🩺 Diabetes</button>
+                    <button class="model-btn" onclick="selectModel('heart')">❤️ Heart Disease</button>
+                    <button class="model-btn" onclick="selectModel('stroke')">🧠 Stroke</button>
+                </div>
+
+                <div class="form-section">
+                    <form id="predictionForm">
+                        <div id="formFields" class="form-grid"></div>
+                        <button type="submit" class="submit-btn">Predict Health Risk</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Page -->
+        <div id="upload" class="page">
+            <div class="predict-container">
+                <h2>Upload Medical Report</h2>
+                <p>Upload your medical report (PDF or Image) for analysis</p>
+
+                <div class="model-selector">
+                    <button class="model-btn active" onclick="selectUploadModel('diabetes')">🩺 Diabetes</button>
+                    <button class="model-btn" onclick="selectUploadModel('heart')">❤️ Heart Disease</button>
+                    <button class="model-btn" onclick="selectUploadModel('stroke')">🧠 Stroke</button>
+                </div>
+
+                <div class="upload-section">
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+                    <label for="fileInput" class="upload-label">📁 Choose File</label>
+                    <p id="fileName" style="margin-top: 1rem; color: #667eea;"></p>
+                    <button class="submit-btn" onclick="uploadFile()">Upload and Analyze</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Page -->
+        <div id="results" class="page">
+            <div class="results-container">
+                <div id="loadingSpinner" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing your health data...</p>
+                </div>
+
+                <div id="resultContent" style="display: none;">
+                    <h2>Prediction Results</h2>
+                    <div id="resultCards"></div>
+                    <button class="back-btn" onclick="showPage('predict')">← Back to Prediction</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="about" class="page">
+            <div class="about-content">
+                <h2>About MedGuardAI</h2>
+                <p>MedGuardAI is an advanced AI-powered health prediction system designed to help individuals assess their risk for various health conditions including diabetes, heart disease, and stroke.</p>
+                
+                <h2>How It Works</h2>
+                <p>Our system uses machine learning models trained on extensive medical datasets to analyze your health parameters and provide personalized risk assessments and recommendations.</p>
+                
+                <h2>Features</h2>
+                <p>• Multiple disease prediction models (Diabetes, Heart Disease, Stroke)</p>
+                <p>• Manual health parameter input</p>
+                <p>• Medical report upload and analysis</p>
+                <p>• Personalized health recommendations</p>
+                <p>• User-friendly interface</p>
+                
+                <h2>Disclaimer</h2>
+                <p>This tool is for informational purposes only and should not replace professional medical advice. Always consult with healthcare professionals for medical decisions.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        // For local development, you can also use: 'http://localhost:8000'
+        let currentModel = 'diabetes';
+        let uploadModel = 'diabetes';
+        let selectedFile = null;
+
+        // Form configurations for each disease type
+        const formConfigs = {
+            diabetes: [
+                { name: 'pregnancies', label: 'Pregnancies', min: 0, max: 20 },
+                { name: 'glucose', label: 'Glucose Level', min: 0, max: 300 },
+                { name: 'bloodPressure', label: 'Blood Pressure', min: 0, max: 200 },
+                { name: 'skinThickness', label: 'Skin Thickness (mm)', min: 0, max: 100 },
+                { name: 'insulin', label: 'Insulin', min: 0, max: 900 },
+                { name: 'bmi', label: 'BMI', min: 0, max: 70, step: 0.1 },
+                { name: 'diabetesPedigree', label: 'Diabetes Pedigree', min: 0, max: 3, step: 0.001 },
+                { name: 'age', label: 'Age', min: 0, max: 120 }
+            ],
+            heart: [
+                { name: 'age', label: 'Age', min: 0, max: 120 },
+                { name: 'sex', label: 'Sex (1=Male, 0=Female)', min: 0, max: 1 },
+                { name: 'chestPain', label: 'Chest Pain Type (0-3)', min: 0, max: 3 },
+                { name: 'restingBP', label: 'Resting Blood Pressure', min: 0, max: 300 },
+                { name: 'cholesterol', label: 'Cholesterol', min: 0, max: 600 },
+                { name: 'fastingBS', label: 'Fasting Blood Sugar > 120 (1/0)', min: 0, max: 1 },
+                { name: 'restingECG', label: 'Resting ECG (0-2)', min: 0, max: 2 },
+                { name: 'maxHR', label: 'Max Heart Rate', min: 0, max: 250 },
+                { name: 'exerciseAngina', label: 'Exercise Angina (1/0)', min: 0, max: 1 },
+                { name: 'oldpeak', label: 'ST Depression', min: 0, max: 10, step: 0.1 },
+                { name: 'slope', label: 'ST Slope (0-2)', min: 0, max: 2 }
+            ],
+            stroke: [
+                { name: 'age', label: 'Age', type: 'number', min: 0, max: 120 },
+                { name: 'hypertension', label: 'Hypertension', type: 'select', options: [{value: 0, text: 'No'}, {value: 1, text: 'Yes'}] },
+                { name: 'heartDisease', label: 'Heart Disease', type: 'select', options: [{value: 0, text: 'No'}, {value: 1, text: 'Yes'}] },
+                { name: 'avgGlucose', label: 'Average Glucose Level', type: 'number', min: 0, max: 300 },
+                { name: 'bmi', label: 'BMI', type: 'number', min: 0, max: 70, step: 0.1 },
+                { name: 'gender', label: 'Gender', type: 'select', options: [{value: 'Male', text: 'Male'}, {value: 'Female', text: 'Female'}, {value: 'Other', text: 'Other'}] },
+                { name: 'everMarried', label: 'Ever Married', type: 'select', options: [{value: 'Yes', text: 'Yes'}, {value: 'No', text: 'No'}] },
+                { name: 'workType', label: 'Work Type', type: 'select', options: [{value: 'Private', text: 'Private'}, {value: 'Self-employed', text: 'Self-employed'}, {value: 'Govt_job', text: 'Government Job'}, {value: 'children', text: 'Children'}, {value: 'Never_worked', text: 'Never Worked'}] },
+                { name: 'residenceType', label: 'Residence Type', type: 'select', options: [{value: 'Urban', text: 'Urban'}, {value: 'Rural', text: 'Rural'}] },
+                { name: 'smokingStatus', label: 'Smoking Status', type: 'select', options: [{value: 'never smoked', text: 'Never Smoked'}, {value: 'formerly smoked', text: 'Formerly Smoked'}, {value: 'smokes', text: 'Smokes'}] }
+            ]
+        };
+
+        // Show page function
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageName).classList.add('active');
+        }
+
+        // Select model function
+        function selectModel(model) {
+            currentModel = model;
+            const buttons = document.querySelectorAll('.model-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderForm();
+        }
+
+        // Select upload model function
+        function selectUploadModel(model) {
+            uploadModel = model;
+            const buttons = document.querySelectorAll('#upload .model-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Render form fields based on selected model
+        function renderForm() {
+            const formFields = document.getElementById('formFields');
+            formFields.innerHTML = '';
+
+            const fields = formConfigs[currentModel];
+            fields.forEach(field => {
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+
+                const label = document.createElement('label');
+                label.textContent = field.label;
+
+                let input;
+                if (field.type === 'select') {
+                    input = document.createElement('select');
+                    input.name = field.name;
+                    input.required = true;
+
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = `Select ${field.label.toLowerCase()}`;
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    input.appendChild(defaultOption);
+
+                    // Add options
+                    field.options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        input.appendChild(optionElement);
+                    });
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'number';
+                    input.name = field.name;
+                    input.min = field.min;
+                    input.max = field.max;
+                    input.step = field.step || 1;
+                    input.required = true;
+                    input.placeholder = `Enter ${field.label.toLowerCase()}`;
+                }
+
+                formGroup.appendChild(label);
+                formGroup.appendChild(input);
+                formFields.appendChild(formGroup);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const features = [];
+
+            formConfigs[currentModel].forEach(field => {
+                const value = formData.get(field.name);
+                if (field.type === 'select') {
+                    // Convert categorical values to one-hot encoding for stroke model
+                    if (currentModel === 'stroke') {
+                        features.push(...convertStrokeCategoricalToFeatures(field, value));
+                    } else {
+                        features.push(parseFloat(value));
+                    }
+                } else {
+                    features.push(parseFloat(value));
+                }
+            });
+
+            showLoading();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model_type: currentModel,
+                        features: features
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                alert('Error: ' + error.message + '\n\nMake sure your FastAPI backend is running on http://127.0.0.1:8000');
+                hideLoading();
+            }
+        });
+
+        // Convert stroke categorical inputs to one-hot encoded features
+        function convertStrokeCategoricalToFeatures(field, value) {
+            const features = [];
+            switch(field.name) {
+                case 'gender':
+                    features.push(value === 'Male' ? 1 : 0); // gender_Male
+                    features.push(value === 'Other' ? 1 : 0); // gender_Other
+                    break;
+                case 'everMarried':
+                    features.push(value === 'Yes' ? 1 : 0); // ever_married_Yes
+                    break;
+                case 'workType':
+                    features.push(value === 'Never_worked' ? 1 : 0); // work_type_Never_worked
+                    features.push(value === 'Private' ? 1 : 0); // work_type_Private
+                    features.push(value === 'Self-employed' ? 1 : 0); // work_type_Self-employed
+                    features.push(value === 'children' ? 1 : 0); // work_type_children
+                    break;
+                case 'residenceType':
+                    features.push(value === 'Urban' ? 1 : 0); // Residence_type_Urban
+                    break;
+                case 'smokingStatus':
+                    features.push(value === 'formerly smoked' ? 1 : 0); // smoking_status_formerly smoked
+                    features.push(value === 'never smoked' ? 1 : 0); // smoking_status_never smoked
+                    features.push(value === 'smokes' ? 1 : 0); // smoking_status_smokes
+                    break;
+                default:
+                    features.push(parseFloat(value));
+            }
+            return features;
+        }
+
+        // File selection handler
+        function handleFileSelect(event) {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                document.getElementById('fileName').textContent = `Selected: ${selectedFile.name}`;
+            }
+        }
+
+        // Upload file function
+        async function uploadFile() {
+            if (!selectedFile) {
+                alert('Please select a file first');
+                return;
+            }
+
+            showLoading();
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('model_type', uploadModel);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                const data = await response.json();
+                displayUploadResults(data);
+            } catch (error) {
+                alert('Error: ' + error.message + '\n\nMake sure your FastAPI backend has the /api/upload endpoint implemented');
+                hideLoading();
+            }
+        }
+
+        // Display upload results (multiple predictions)
+        function displayUploadResults(data) {
+            hideLoading();
+
+            const resultCards = document.getElementById('resultCards');
+            resultCards.innerHTML = '';
+
+            if (data.predictions) {
+                // Handle multiple predictions from upload
+                for (const [disease, prediction] of Object.entries(data.predictions)) {
+                    const isHighRisk = prediction === 1;
+                    const predictionCard = document.createElement('div');
+                    predictionCard.className = `result-card ${isHighRisk ? 'high-risk' : 'low-risk'}`;
+                    predictionCard.innerHTML = `
+                        <h3>${isHighRisk ? '⚠️' : '✅'} ${disease.charAt(0).toUpperCase() + disease.slice(1)}: ${isHighRisk ? 'High Risk' : 'Low Risk'}</h3>
+                        <p><strong>Prediction:</strong> ${prediction}</p>
+                    `;
+                    resultCards.appendChild(predictionCard);
+
+                    // Add recommendations for this disease
+                    if (data.recommendations && data.recommendations[disease]) {
+                        const rec = data.recommendations[disease];
+                        const recommendationCard = document.createElement('div');
+                        recommendationCard.className = 'result-card';
+                        recommendationCard.style.background = '#f7fafc';
+                        recommendationCard.innerHTML = `
+                            <h3>📋 ${disease.charAt(0).toUpperCase() + disease.slice(1)} Recommendations</h3>
+                            ${rec.health_condition ? `<p><strong>Health Condition:</strong> ${rec.health_condition}</p>` : ''}
+                            ${rec.healthcare_tips ? `<p><strong>Healthcare Tips:</strong> ${rec.healthcare_tips.join(', ')}</p>` : ''}
+                            ${rec.food_suggestions ? `<p><strong>Food Suggestions:</strong> ${rec.food_suggestions.join(', ')}</p>` : ''}
+                            ${rec.tips_to_reduce_problem ? `<p><strong>Tips to Reduce Problem:</strong> ${rec.tips_to_reduce_problem.join(', ')}</p>` : ''}
+                        `;
+                        resultCards.appendChild(recommendationCard);
+                    }
+                }
+            } else {
+                // Fallback to single prediction display
+                displayResults(data);
+            }
+
+            // Additional tips
+            const tipsCard = document.createElement('div');
+            tipsCard.className = 'result-card';
+            tipsCard.style.background = '#fffaf0';
+            tipsCard.innerHTML = `
+                <h3>💡 Health Tips</h3>
+                <p>• Maintain regular check-ups with your healthcare provider</p>
+                <p>• Follow a balanced diet rich in fruits and vegetables</p>
+                <p>• Engage in regular physical activity</p>
+                <p>• Monitor your vital signs regularly</p>
+                <p>• Manage stress through relaxation techniques</p>
+            `;
+            resultCards.appendChild(tipsCard);
+        }
+
+        // Show loading spinner
+        function showLoading() {
+            showPage('results');
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('resultContent').style.display = 'none';
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('resultContent').style.display = 'block';
+        }
+
+        // Display results
+        function displayResults(data) {
+            hideLoading();
+
+            const resultCards = document.getElementById('resultCards');
+            resultCards.innerHTML = '';
+
+            // Handle different response formats
+            let predictionValue, riskLevel, riskIcon, riskClass;
+
+            if (typeof data.prediction === 'number') {
+                // API returns 0 or 1
+                predictionValue = data.prediction;
+                riskLevel = data.prediction === 1 ? 'High Risk' : 'Low Risk';
+                riskIcon = data.prediction === 1 ? '⚠️' : '✅';
+                riskClass = data.prediction === 1 ? 'high-risk' : 'low-risk';
+            } else if (typeof data.prediction === 'string') {
+                // Handle string predictions if any
+                predictionValue = data.prediction;
+                riskLevel = data.prediction.toLowerCase().includes('high') ? 'High Risk' : 'Low Risk';
+                riskIcon = data.prediction.toLowerCase().includes('high') ? '⚠️' : '✅';
+                riskClass = data.prediction.toLowerCase().includes('high') ? 'high-risk' : 'low-risk';
+            } else {
+                // Fallback
+                predictionValue = data.prediction || 'Unknown';
+                riskLevel = 'Unknown Risk';
+                riskIcon = '❓';
+                riskClass = 'low-risk';
+            }
+
+            // Prediction card
+            const predictionCard = document.createElement('div');
+            predictionCard.className = `result-card ${riskClass}`;
+            predictionCard.innerHTML = `
+                <h3>${riskIcon} Prediction: ${riskLevel}</h3>
+                <p><strong>Model Used:</strong> ${data.model_used || currentModel}</p>
+                ${data.message ? `<p><strong>Details:</strong> ${data.message}</p>` : ''}
+            `;
+            resultCards.appendChild(predictionCard);
+
+            // Recommendation card
+            if (data.recommendation) {
+                const recommendationCard = document.createElement('div');
+                recommendationCard.className = 'result-card';
+                recommendationCard.style.background = '#f7fafc';
+                recommendationCard.innerHTML = `
+                    <h3>📋 Recommendations</h3>
+                    ${typeof data.recommendation === 'string' ? `<p>${data.recommendation}</p>` : `
+                        ${data.recommendation.health_condition ? `<p><strong>Health Condition:</strong> ${data.recommendation.health_condition}</p>` : ''}
+                        ${data.recommendation.healthcare_tips ? `<p><strong>Healthcare Tips:</strong> ${data.recommendation.healthcare_tips.join(', ')}</p>` : ''}
+                        ${data.recommendation.food_suggestions ? `<p><strong>Food Suggestions:</strong> ${data.recommendation.food_suggestions.join(', ')}</p>` : ''}
+                        ${data.recommendation.tips_to_reduce_problem ? `<p><strong>Tips to Reduce Problem:</strong> ${data.recommendation.tips_to_reduce_problem.join(', ')}</p>` : ''}
+                    `}
+                `;
+                resultCards.appendChild(recommendationCard);
+            }
+
+            // Additional tips
+            const tipsCard = document.createElement('div');
+            tipsCard.className = 'result-card';
+            tipsCard.style.background = '#fffaf0';
+            tipsCard.innerHTML = `
+                <h3>💡 Health Tips</h3>
+                <p>• Maintain regular check-ups with your healthcare provider</p>
+                <p>• Follow a balanced diet rich in fruits and vegetables</p>
+                <p>• Engage in regular physical activity</p>
+                <p>• Monitor your vital signs regularly</p>
+                <p>• Manage stress through relaxation techniques</p>
+            `;
+            resultCards.appendChild(tipsCard);
+        }
+
+        // Initialize form on page load
+        renderForm();
+    </script>
+</body>
+</html>

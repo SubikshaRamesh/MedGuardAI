@@ -1,0 +1,20 @@
+Medical Report
+
+Patient Name: John Doe
+Age: 50
+Gender: Male
+
+Blood Test Results:
+- Glucose: 148 mg/dL
+- Blood Pressure: 160/100 mmHg
+- BMI: 33.6
+- Cholesterol: 240 mg/dL
+- Triglycerides: 200 mg/dL
+
+Other Information:
+- Pregnancies: 0 (not applicable)
+- Skin Thickness: 35 mm
+- Insulin: 0 uU/mL
+- Diabetes Pedigree: 0.627
+
+Assessment: High risk for diabetes and cardiovascular disease.
